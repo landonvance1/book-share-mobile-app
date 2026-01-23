@@ -6,6 +6,7 @@ export interface UserBookWithOwner {
   userId: string;
   bookId: number;
   status: number;
+  isDeleted: boolean;
   book: Book;
   user: User;
 }

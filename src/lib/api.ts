@@ -1,6 +1,17 @@
 import { API_BASE_URL } from './constants';
 import * as SecureStore from 'expo-secure-store';
 
+export class ApiError extends Error {
+  constructor(
+    public status: number,
+    message: string,
+    public data?: any
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 const getAuthHeaders = async (): Promise<Record<string, string>> => {
   const token = await SecureStore.getItemAsync('auth_token');
   return token ? { 'Authorization': `Bearer ${token}` } : {};
@@ -83,7 +94,8 @@ export const api = {
       ...(data && { body: JSON.stringify(data) }),
     });
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      throw new ApiError(response.status, `API Error: ${response.status}`, errorData);
     }
     // DELETE requests may return no content
     const text = await response.text();

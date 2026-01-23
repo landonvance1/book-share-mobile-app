@@ -50,6 +50,7 @@ export const createMockShare = (overrides?: Partial<Share>): Share => {
       userId: lender.id,
       bookId: book.id,
       status: BookStatus.BeingShared,
+      isDeleted: false,
       book,
       user: lender,
     },
