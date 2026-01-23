@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { useUserBooks } from './hooks/useUserBooks';
 import { useDebounceValue } from '../../hooks/useDebounceValue';
@@ -59,11 +60,38 @@ export default function LibraryScreen() {
     );
   });
 
-  const handleRemoveBook = async (userBookId: number) => {
+  const handleRemoveBook = async (userBookId: number, confirmed?: boolean) => {
     try {
-      await removeUserBook(userBookId);
+      const result = await removeUserBook(userBookId, confirmed);
+
+      if (result.type === 'requires_confirmation') {
+        Alert.alert(
+          'Confirm Delete?',
+          result.message,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            {
+              text: 'Remove Anyway',
+              style: 'destructive',
+              onPress: () => handleRemoveBook(userBookId, true),
+            },
+          ]
+        );
+        return;
+      }
+
+      Toast.show({
+        type: 'success',
+        text1: 'Book removed from library',
+        visibilityTime: 1500,
+      });
     } catch (error) {
       console.error('Failed to remove book:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to remove book',
+        visibilityTime: 1500,
+      });
     }
   };
 

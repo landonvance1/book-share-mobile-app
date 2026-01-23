@@ -21,7 +21,7 @@ export function useNotifications() {
 
 /**
  * Derives unread share notification count from the notifications cache
- * Only counts share-related notifications (StatusChanged, DueDateChanged, ShareMessageReceived)
+ * Only counts share-related notifications (StatusChanged, DueDateChanged, ShareMessageReceived, UserBookWithdrawn)
  */
 export function useShareUnreadCount() {
   const { data: notifications = [] } = useNotifications();
@@ -30,7 +30,8 @@ export function useShareUnreadCount() {
     (notification) =>
       notification.notificationType === NotificationTypes.STATUS_STATUS_CHANGED ||
       notification.notificationType === NotificationTypes.DUE_DATE_CHANGED ||
-      notification.notificationType === NotificationTypes.SHARE_MESSAGE_RECEIVED
+      notification.notificationType === NotificationTypes.SHARE_MESSAGE_RECEIVED ||
+      notification.notificationType === NotificationTypes.USER_BOOK_WITHDRAWN
   );
 
   return shareNotifications.length;
@@ -58,12 +59,17 @@ export function useShareNotifications(shareId: number) {
     (n) => n.notificationType === NotificationTypes.SHARE_MESSAGE_RECEIVED
   ).length;
 
+  const bookWithdrawn = shareNotifications.some(
+    (n) => n.notificationType === NotificationTypes.USER_BOOK_WITHDRAWN
+  );
+
   return {
     notifications: shareNotifications,
     count: shareNotifications.length,
     statusUpdated,
     dueDateUpdated,
     unreadMessagesCount,
+    bookWithdrawn,
   };
 }
 
@@ -82,7 +88,8 @@ export function useShareListNotificationCount(shares: Share[]) {
       shareIds.has(notification.shareId) &&
       (notification.notificationType === NotificationTypes.STATUS_STATUS_CHANGED ||
         notification.notificationType === NotificationTypes.DUE_DATE_CHANGED ||
-        notification.notificationType === NotificationTypes.SHARE_MESSAGE_RECEIVED)
+        notification.notificationType === NotificationTypes.SHARE_MESSAGE_RECEIVED ||
+        notification.notificationType === NotificationTypes.USER_BOOK_WITHDRAWN)
   ).length;
 
   return count;

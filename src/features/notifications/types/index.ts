@@ -15,4 +15,5 @@ export const NotificationTypes = {
   STATUS_STATUS_CHANGED: 'ShareStatusChanged',
   DUE_DATE_CHANGED: 'ShareDueDateChanged',
   SHARE_MESSAGE_RECEIVED: 'ShareMessageReceived',
+  USER_BOOK_WITHDRAWN: 'UserBookWithdrawn',
 } as const;

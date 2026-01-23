@@ -350,4 +350,92 @@ describe('ShareStatusTimeline Component', () => {
       // The actual call happens after Alert confirmation
     });
   });
+
+  describe('Book withdrawn (isBookDeleted)', () => {
+    it('shows withdrawn message instead of timeline when isBookDeleted is true', () => {
+      const share = createMockShare({ status: ShareStatus.PickedUp });
+      const { getByText, queryByText } = render(
+        <ShareStatusTimeline
+          {...defaultProps}
+          share={share}
+          isBookDeleted={true}
+        />
+      );
+
+      // Should show the withdrawn message
+      expect(getByText('This book has been removed from the lender\'s library. Please coordinate the return if possible.')).toBeTruthy();
+
+      // Should NOT show any timeline steps
+      expect(queryByText('Requested')).toBeNull();
+      expect(queryByText('Ready')).toBeNull();
+      expect(queryByText('Picked Up')).toBeNull();
+    });
+
+    it('shows normal timeline when isBookDeleted is false', () => {
+      const share = createMockShare({ status: ShareStatus.PickedUp });
+      const { getByText, queryByText } = render(
+        <ShareStatusTimeline
+          {...defaultProps}
+          share={share}
+          isBookDeleted={false}
+        />
+      );
+
+      // Should NOT show the withdrawn message
+      expect(queryByText('This book has been removed from the lender\'s library. Please coordinate the return if possible.')).toBeNull();
+
+      // Should show timeline steps
+      expect(getByText('Requested')).toBeTruthy();
+      expect(getByText('Ready')).toBeTruthy();
+      expect(getByText('Picked Up')).toBeTruthy();
+    });
+
+    it('shows normal timeline when isBookDeleted prop is not provided', () => {
+      const share = createMockShare({ status: ShareStatus.Ready });
+      const { getByText, queryByText } = render(
+        <ShareStatusTimeline
+          {...defaultProps}
+          share={share}
+        />
+      );
+
+      // Should NOT show the withdrawn message
+      expect(queryByText('This book has been removed from the lender\'s library. Please coordinate the return if possible.')).toBeNull();
+
+      // Should show timeline steps
+      expect(getByText('Requested')).toBeTruthy();
+      expect(getByText('Ready')).toBeTruthy();
+    });
+
+    it('shows withdrawn message regardless of share status', () => {
+      // Test with HomeSafe status
+      const homeSafeShare = createMockShare({ status: ShareStatus.HomeSafe });
+      const { getByText: getByTextHomeSafe, queryByText: queryByTextHomeSafe } = render(
+        <ShareStatusTimeline
+          {...defaultProps}
+          share={homeSafeShare}
+          isBookDeleted={true}
+        />
+      );
+
+      expect(getByTextHomeSafe('This book has been removed from the lender\'s library. Please coordinate the return if possible.')).toBeTruthy();
+      expect(queryByTextHomeSafe('Home Safe')).toBeNull();
+    });
+
+    it('does not show action buttons when book is deleted', () => {
+      const share = createMockShare({ status: ShareStatus.Requested });
+      const { queryByText } = render(
+        <ShareStatusTimeline
+          {...defaultProps}
+          share={share}
+          isOwner={true}
+          isBookDeleted={true}
+        />
+      );
+
+      // Action buttons should not be visible
+      expect(queryByText('Mark as Ready')).toBeNull();
+      expect(queryByText('Decline Share')).toBeNull();
+    });
+  });
 });

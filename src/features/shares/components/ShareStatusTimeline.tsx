@@ -87,6 +87,7 @@ interface ShareStatusTimelineProps {
   isBorrower: boolean;
   onStatusUpdate?: (newStatus: ShareStatus) => void;
   hasStatusNotification?: boolean;
+  isBookDeleted?: boolean;
 }
 
 export default function ShareStatusTimeline({
@@ -94,7 +95,8 @@ export default function ShareStatusTimeline({
   isOwner,
   isBorrower,
   onStatusUpdate,
-  hasStatusNotification = false
+  hasStatusNotification = false,
+  isBookDeleted = false
 }: ShareStatusTimelineProps) {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const [isAnimating, setIsAnimating] = useState(false);
@@ -266,6 +268,18 @@ export default function ShareStatusTimeline({
       </Text>
     );
   };
+
+  // Show withdrawn message instead of timeline if book was deleted
+  if (isBookDeleted) {
+    return (
+      <View style={styles.bookWithdrawnContainer}>
+        <Ionicons name="information-circle" size={24} color="#856404" />
+        <Text style={styles.bookWithdrawnText}>
+          This book has been removed from the lender's library. Please coordinate the return if possible.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.timelineContainer}>
@@ -453,5 +467,23 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
+  },
+  bookWithdrawnContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: '#FFF3CD',
+    padding: 16,
+    margin: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#FFEAA7',
+    gap: 12,
+  },
+  bookWithdrawnText: {
+    flex: 1,
+    fontSize: 14,
+    color: '#856404',
+    fontWeight: '500',
+    lineHeight: 20,
   },
 });

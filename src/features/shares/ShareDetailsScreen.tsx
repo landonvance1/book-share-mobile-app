@@ -51,7 +51,7 @@ export default function ShareDetailsScreen() {
   const datePickerHeight = useRef(new Animated.Value(0)).current;
 
   // Notification handling
-  const { statusUpdated, unreadMessagesCount, dueDateUpdated } = useShareNotifications(currentShare.id);
+  const { statusUpdated, unreadMessagesCount, dueDateUpdated, bookWithdrawn } = useShareNotifications(currentShare.id);
   const markNotificationsRead = useMarkShareNotificationsRead(currentShare.id);
 
   // Track whether to show return date highlight (persists until user navigates away)
@@ -74,7 +74,7 @@ export default function ShareDetailsScreen() {
 
   // Mark share notifications as read after a delay (gives user time to see the animation)
   useEffect(() => {
-    if (statusUpdated || dueDateUpdated) {
+    if (statusUpdated || dueDateUpdated || bookWithdrawn) {
       const timer = setTimeout(() => {
         markNotificationsRead.mutate(undefined, {
           onError: (error) => {
@@ -421,6 +421,7 @@ export default function ShareDetailsScreen() {
           isBorrower={isBorrower}
           onStatusUpdate={handleStatusUpdate}
           hasStatusNotification={statusUpdated}
+          isBookDeleted={currentShare.userBook.isDeleted}
         />
 
       {/* Dispute Button */}

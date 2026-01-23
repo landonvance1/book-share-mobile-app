@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { UserBook } from '../../books/types';
 import { userBooksApi } from '../api/userBooksApi';
 import { useAuth } from '../../../contexts/AuthContext';
+import { DeleteUserBookResult } from '../types';
 
 interface UseUserBooksReturn {
   userBooks: UserBook[];
@@ -9,43 +10,42 @@ interface UseUserBooksReturn {
   error: string | null;
   refreshUserBooks: () => Promise<void>;
   updateUserBookStatus: (userBookId: number, status: number) => Promise<void>;
-  removeUserBook: (userBookId: number) => Promise<void>;
+  removeUserBook: (userBookId: number, confirmed?: boolean) => Promise<DeleteUserBookResult>;
 }
 
 export const useUserBooks = (): UseUserBooksReturn => {
   const [userBooks, setUserBooks] = useState<UserBook[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
-  
+  const { user, isLoading: isAuthLoading } = useAuth();
+
   const refreshUserBooks = useCallback(async () => {
+    const userId = user?.id;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
     setLoading(true);
     setError(null);
-    
+
     try {
-      const userId = user?.id;
-      if (!userId) {
-        throw new Error('User not authenticated');
-      }
-      
       const books = await userBooksApi.getUserBooks(userId);
-      
+
       // Sort by author last name
       const sortedBooks = books.sort((a, b) => {
         const aLastName = a.book.author.split(' ').pop() || '';
         const bLastName = b.book.author.split(' ').pop() || '';
         return aLastName.localeCompare(bLastName);
       });
-      
+
       setUserBooks(sortedBooks);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch user books';
       setError(errorMessage);
-      console.error('Error fetching user books:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user?.id]);
 
   const updateUserBookStatus = useCallback(async (userBookId: number, status: number) => {
     try {
@@ -54,26 +54,29 @@ export const useUserBooks = (): UseUserBooksReturn => {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update book status';
       setError(errorMessage);
-      console.error('Error updating book status:', err);
       throw err;
     }
   }, [refreshUserBooks]);
 
-  const removeUserBook = useCallback(async (userBookId: number) => {
+  const removeUserBook = useCallback(async (userBookId: number, confirmed?: boolean): Promise<DeleteUserBookResult> => {
     try {
-      await userBooksApi.deleteUserBook(userBookId);
-      await refreshUserBooks();
+      const result = await userBooksApi.deleteUserBook(userBookId, confirmed);
+      if (result.type === 'success') {
+        await refreshUserBooks();
+      }
+      return result;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to remove book';
       setError(errorMessage);
-      console.error('Error removing book:', err);
       throw err;
     }
   }, [refreshUserBooks]);
 
   useEffect(() => {
-    refreshUserBooks();
-  }, [refreshUserBooks]);
+    if (!isAuthLoading && user?.id) {
+      refreshUserBooks();
+    }
+  }, [isAuthLoading, user?.id, refreshUserBooks]);
 
   return {
     userBooks,
