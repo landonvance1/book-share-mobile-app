@@ -12,7 +12,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LibraryStackParamList } from '../LibraryStack';
 import { api } from '../../../lib/api';
-import { Book, BookSearchResponse } from '../../books/types';
+import { Book } from '../../books/types';
 
 type BarcodeScannerNavigationProp = StackNavigationProp<LibraryStackParamList, 'BarcodeScanner'>;
 
@@ -42,27 +42,20 @@ export default function BarcodeScanner() {
     }, [])
   );
 
-  const handleBarCodeScanned = async ({ type, data }: BarcodeScanningResult) => {
-    console.log('Barcode scan triggered!', { type, data, scanned, loading, isProcessing: isProcessingRef.current });
-    
+  const handleBarCodeScanned = async ({ type: _type, data }: BarcodeScanningResult) => {
     if (isProcessingRef.current) {
-      console.log('Scan blocked - already processing');
       return;
     }
-    
+
     isProcessingRef.current = true;
     setScanned(true);
     setLoading(true);
 
     try {
-      console.log(`Bar code with type ${type} and data ${data} has been scanned!`);
-      
       const endpoint = `/books/isbn/${data}`;
-      console.log('Making API call to:', endpoint);
-      
+
       // Call API to search for book by ISBN using the full barcode data
       const response: Book = await api.get(endpoint);
-      console.log('API response:', response);
       
       // Handle response validation
       if (!response) {

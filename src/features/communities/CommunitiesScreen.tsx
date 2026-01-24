@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
 import { communitiesApi } from './api/communitiesApi';
 import { CommunityWithMemberCount } from './types';
@@ -12,11 +12,7 @@ export default function CommunitiesScreen() {
   const [showAddForm, setShowAddForm] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    loadCommunities();
-  }, []);
-
-  const loadCommunities = async () => {
+  const loadCommunities = useCallback(async () => {
     try {
       setLoading(true);
       if (!user?.id) {
@@ -31,7 +27,11 @@ export default function CommunitiesScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]);
+
+  useEffect(() => {
+    loadCommunities();
+  }, [loadCommunities]);
 
   const handleLeaveCommunity = async (communityId: number) => {
     if (!user?.id) return;

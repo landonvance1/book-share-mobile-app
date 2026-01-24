@@ -14,7 +14,6 @@ interface SearchBookCardProps {
 
 export const SearchBookCard: React.FC<SearchBookCardProps> = ({ book, onBorrowPress }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
   const [isRequesting, setIsRequesting] = useState(false);
   
   const hasValidThumbnail = book.bookId && book.bookId > 0 && !imageError;
@@ -58,11 +57,7 @@ export const SearchBookCard: React.FC<SearchBookCardProps> = ({ book, onBorrowPr
             <Image
               source={{ uri: getImageUrlFromId(book.bookId) }}
               style={bookCardStyles.thumbnailImage}
-              onLoad={() => setImageLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
+              onError={() => setImageError(true)}
               resizeMode="cover"
             />
           ) : (

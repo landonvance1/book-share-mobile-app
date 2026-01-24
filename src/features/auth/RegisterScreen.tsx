@@ -43,7 +43,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) =>
         firstName: firstName.trim(),
         lastName: lastName.trim(),
       });
-    } catch (error) {
+    } catch {
       Alert.alert('Registration Failed', 'Please try again');
     } finally {
       setIsLoading(false);

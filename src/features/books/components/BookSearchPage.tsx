@@ -22,8 +22,8 @@ export const BookSearchPage: React.FC = () => {
     searchBooks(debouncedQuery);
   }, [debouncedQuery, searchBooks]);
 
-  const handleBorrowPress = (book: SearchBookResult) => {
-    console.log('Borrow pressed for:', book.title);
+  const handleBorrowPress = (_book: SearchBookResult) => {
+    // TODO: Implement borrow flow
   };
 
   const renderBookCard = ({ item }: { item: SearchBookResult }) => (

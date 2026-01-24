@@ -11,7 +11,6 @@ interface ExternalBookCardProps {
 
 export const ExternalBookCard: React.FC<ExternalBookCardProps> = ({ book, onAddPress }) => {
   const [imageError, setImageError] = useState(false);
-  const [imageLoading, setImageLoading] = useState(true);
   const [addingToLibrary, setAddingToLibrary] = useState(false);
   
   const hasValidThumbnail = book.thumbnailUrl && !imageError;
@@ -33,11 +32,7 @@ export const ExternalBookCard: React.FC<ExternalBookCardProps> = ({ book, onAddP
             <Image
               source={{ uri: getFullImageUrl(book.thumbnailUrl) }}
               style={bookCardStyles.thumbnailImage}
-              onLoad={() => setImageLoading(false)}
-              onError={() => {
-                setImageError(true);
-                setImageLoading(false);
-              }}
+              onError={() => setImageError(true)}
               resizeMode="cover"
             />
           ) : (

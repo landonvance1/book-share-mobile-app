@@ -130,6 +130,7 @@ export default function ShareStatusTimeline({
 
       animationRef.current.start();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasStatusNotification]);
 
   // Cleanup: stop animation only when component unmounts
@@ -275,7 +276,7 @@ export default function ShareStatusTimeline({
       <View style={styles.bookWithdrawnContainer}>
         <Ionicons name="information-circle" size={24} color="#856404" />
         <Text style={styles.bookWithdrawnText}>
-          This book has been removed from the lender's library. Please coordinate the return if possible.
+          {"This book has been removed from the lender's library. Please coordinate the return if possible."}
         </Text>
       </View>
     );

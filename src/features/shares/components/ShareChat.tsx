@@ -9,7 +9,6 @@ import {
   Alert,
   ActivityIndicator
 } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { chatApi } from '../api/chatApi';
 import { signalRService } from '../services/signalRService';
@@ -26,7 +25,6 @@ const RATE_LIMIT_WARNING_THRESHOLD = 25; // Warn at 25 messages (5 before limit)
 
 export default function ShareChat({ share }: ShareChatProps) {
   const { user } = useAuth();
-  const insets = useSafeAreaInsets();
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     connectionStatus: ConnectionStatus.Disconnected,
@@ -46,6 +44,7 @@ export default function ShareChat({ share }: ShareChatProps) {
     return () => {
       cleanup();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [share.id]);
 
   // Track recent messages for rate limiting
@@ -56,6 +55,27 @@ export default function ShareChat({ share }: ShareChatProps) {
 
     return () => clearInterval(timer);
   }, []);
+
+  const loadMessages = async (page: number = 1) => {
+    try {
+      const response = await chatApi.getChatMessages(share.id, { page, pageSize: 50 });
+
+      setChatState(prev => ({
+        ...prev,
+        messages: page === 1 ? response.messages : [...prev.messages, ...response.messages],
+        hasMoreMessages: response.hasNextPage,
+        currentPage: page,
+        isLoading: false,
+      }));
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+      setChatState(prev => ({
+        ...prev,
+        error: 'Failed to load messages',
+        isLoading: false,
+      }));
+    }
+  };
 
   const initializeChat = useCallback(async () => {
     try {
@@ -104,6 +124,7 @@ export default function ShareChat({ share }: ShareChatProps) {
         isLoading: false,
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [share.id]);
 
   const cleanup = useCallback(async () => {
@@ -119,27 +140,6 @@ export default function ShareChat({ share }: ShareChatProps) {
       console.error('Error during cleanup:', error);
     }
   }, [share.id]);
-
-  const loadMessages = async (page: number = 1) => {
-    try {
-      const response = await chatApi.getChatMessages(share.id, { page, pageSize: 50 });
-
-      setChatState(prev => ({
-        ...prev,
-        messages: page === 1 ? response.messages : [...prev.messages, ...response.messages],
-        hasMoreMessages: response.hasNextPage,
-        currentPage: page,
-        isLoading: false,
-      }));
-    } catch (error) {
-      console.error('Failed to load messages:', error);
-      setChatState(prev => ({
-        ...prev,
-        error: 'Failed to load messages',
-        isLoading: false,
-      }));
-    }
-  };
 
   const sendMessage = async () => {
     const content = messageInput.trim();

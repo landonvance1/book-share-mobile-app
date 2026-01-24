@@ -35,6 +35,7 @@ export default function ShareChatScreen() {
         // Silently fail - don't show error to user for this background operation
       },
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

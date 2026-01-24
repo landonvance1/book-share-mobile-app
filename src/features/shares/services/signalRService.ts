@@ -58,33 +58,29 @@ class SignalRService {
 
     // Connection state changes
     this.connection.onclose(() => {
-      console.log('SignalR connection closed');
       this.updateConnectionStatus(ConnectionStatus.Disconnected);
     });
 
     this.connection.onreconnecting(() => {
-      console.log('SignalR reconnecting...');
       this.updateConnectionStatus(ConnectionStatus.Reconnecting);
     });
 
     this.connection.onreconnected(() => {
-      console.log('SignalR reconnected');
       this.reconnectAttempts = 0;
       this.updateConnectionStatus(ConnectionStatus.Connected);
     });
 
     // Hub events
     this.connection.on('ReceiveMessage', (message: ChatMessage) => {
-      console.log('Received message:', message);
       this.notifyMessageReceived(message);
     });
 
-    this.connection.on('JoinedChat', (shareId: number) => {
-      console.log(`Joined chat for share ${shareId}`);
+    this.connection.on('JoinedChat', (_shareId: number) => {
+      // Chat joined successfully
     });
 
-    this.connection.on('LeftChat', (shareId: number) => {
-      console.log(`Left chat for share ${shareId}`);
+    this.connection.on('LeftChat', (_shareId: number) => {
+      // Chat left successfully
     });
 
     this.connection.on('Error', (error: string) => {
@@ -103,7 +99,6 @@ class SignalRService {
       await this.connection.start();
       this.updateConnectionStatus(ConnectionStatus.Connected);
       this.reconnectAttempts = 0;
-      console.log('SignalR connected');
     } catch (error) {
       console.error('Failed to connect to SignalR:', error);
       this.updateConnectionStatus(ConnectionStatus.Failed);
@@ -115,9 +110,8 @@ class SignalRService {
     if (this.connection && this.connection.state !== HubConnectionState.Disconnected) {
       try {
         await this.connection.stop();
-        console.log('SignalR disconnected');
-      } catch (error) {
-        console.error('Error disconnecting SignalR:', error);
+      } catch {
+        // Ignore disconnect errors
       }
     }
     this.connection = null;
@@ -131,9 +125,7 @@ class SignalRService {
 
     try {
       await this.connection.invoke('JoinShareChat', shareId);
-      console.log(`Joined chat for share ${shareId}`);
     } catch (error) {
-      console.error('Failed to join share chat:', error);
       throw error;
     }
   }
@@ -145,9 +137,8 @@ class SignalRService {
 
     try {
       await this.connection.invoke('LeaveShareChat', shareId);
-      console.log(`Left chat for share ${shareId}`);
-    } catch (error) {
-      console.error('Failed to leave share chat:', error);
+    } catch {
+      // Ignore leave errors
     }
   }
 
@@ -158,9 +149,7 @@ class SignalRService {
 
     try {
       await this.connection.invoke('SendMessage', shareId, content);
-      console.log('Message sent via SignalR');
     } catch (error) {
-      console.error('Failed to send message via SignalR:', error);
       throw error;
     }
   }

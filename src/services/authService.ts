@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import { api } from '../lib/api';
-import { AuthResponse, LoginRequest, RegisterRequest, RefreshTokenRequest } from '../types/auth';
+import { AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
 
 const TOKEN_KEY = 'auth_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
