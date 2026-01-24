@@ -85,6 +85,7 @@ export default function ShareDetailsScreen() {
 
       return () => clearTimeout(timer);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 

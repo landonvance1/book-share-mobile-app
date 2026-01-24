@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (storedUser && token) {
         setUser(storedUser);
       }
-    } catch (error) {
+    } catch {
       // Silently fail - user will remain logged out
     } finally {
       setIsLoading(false);
@@ -67,7 +67,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       // Clear React Query cache to prevent data leakage between users
       queryClient.clear();
-    } catch (error) {
+    } catch {
       // Silently fail - user state is cleared regardless
     }
   };

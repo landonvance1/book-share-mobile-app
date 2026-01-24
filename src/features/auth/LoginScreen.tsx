@@ -30,7 +30,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     setIsLoading(true);
     try {
       await login({ email: email.trim(), password });
-    } catch (error) {
+    } catch {
       Alert.alert('Login Failed', 'Invalid email or password');
     } finally {
       setIsLoading(false);
@@ -81,7 +81,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don't have an account? </Text>
+          <Text style={styles.footerText}>{"Don't have an account? "}</Text>
           <TouchableOpacity onPress={navigateToRegister}>
             <Text style={styles.linkText}>Sign Up</Text>
           </TouchableOpacity>

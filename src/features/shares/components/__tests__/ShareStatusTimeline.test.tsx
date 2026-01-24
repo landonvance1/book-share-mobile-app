@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, fireEvent, screen } from '@testing-library/react-native';
-import ShareStatusTimeline, { getTimelineSteps, StatusStep } from '../ShareStatusTimeline';
+import { render, fireEvent } from '@testing-library/react-native';
+import ShareStatusTimeline, { getTimelineSteps } from '../ShareStatusTimeline';
 import { ShareStatus } from '../../../../lib/constants';
 import { createMockShare } from '../../../../__tests__/utils/factories';
 

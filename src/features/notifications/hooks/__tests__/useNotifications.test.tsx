@@ -1,11 +1,9 @@
 import React from 'react';
 import { renderHook, waitFor, act } from '@testing-library/react-native';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { notifyManager } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider , notifyManager } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { server } from '../../../../__tests__/mocks/server';
 import {
-  useNotifications,
   useShareUnreadCount,
   useShareNotifications,
   useShareListNotificationCount,
