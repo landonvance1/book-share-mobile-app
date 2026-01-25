@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#1C3A5B',
-    marginBottom: 12,
+    marginBottom: 4,
   },
   detailsGroup: {
     gap: 4,
@@ -579,13 +579,13 @@ const styles = StyleSheet.create({
   detailLabel: {
     fontWeight: '600',
   },
+  // No padding in default state to align with "Owner"/"Borrower" labels and maintain
+  // consistent 4px vertical spacing. Padding only applied in highlighted state where
+  // background provides visual context for the extra spacing.
   returnDateContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    marginVertical: 4,
     borderRadius: 8,
     borderLeftWidth: 0,
   },
@@ -593,6 +593,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#E3F2FD',
     borderLeftWidth: 4,
     borderLeftColor: '#2196F3',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginVertical: 4,
   },
   returnDateUpdateBadge: {
     backgroundColor: '#2196F3',
