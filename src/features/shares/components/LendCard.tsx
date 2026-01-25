@@ -66,10 +66,11 @@ export const LendCard: React.FC<LendCardProps> = ({ share, showUnarchive = false
     navigation.navigate('ShareDetails', { share, isArchived: showUnarchive });
   };
 
-  const isTerminalState =
+  const canArchive =
     share.status === ShareStatus.HomeSafe ||
     share.isDisputed ||
-    share.status === ShareStatus.Declined;
+    share.status === ShareStatus.Declined ||
+    share.userBook.isDeleted;
 
   const handleArchive = async () => {
     if (isArchiving) return;
@@ -135,7 +136,7 @@ export const LendCard: React.FC<LendCardProps> = ({ share, showUnarchive = false
       );
     }
 
-    if (isTerminalState) {
+    if (canArchive) {
       return (
         <TouchableOpacity style={styles.archiveAction} onPress={handleArchive}>
           <Ionicons name="archive-outline" size={24} color="#fff" />
@@ -197,7 +198,7 @@ export const LendCard: React.FC<LendCardProps> = ({ share, showUnarchive = false
   );
 
   // Only enable swipe if it's a terminal state or showing unarchive
-  if (isTerminalState || showUnarchive) {
+  if (canArchive || showUnarchive) {
     return (
       <Swipeable
         ref={swipeableRef}

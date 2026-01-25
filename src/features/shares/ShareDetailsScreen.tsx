@@ -453,11 +453,12 @@ export default function ShareDetailsScreen() {
           </View>
         )}
 
-        {/* Archive/Unarchive Button for Terminal States */}
+        {/* Archive/Unarchive Button for Terminal States or Deleted Books */}
         {(isArchived ||
           currentShare.status === ShareStatus.HomeSafe ||
           currentShare.isDisputed ||
-          currentShare.status === ShareStatus.Declined) && (
+          currentShare.status === ShareStatus.Declined ||
+          currentShare.userBook.isDeleted) && (
           <TouchableOpacity
             style={[
               isArchived ? styles.unarchiveButton : styles.archiveButton,

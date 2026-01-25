@@ -75,10 +75,11 @@ export const ShareBookCard: React.FC<ShareBookCardProps> = ({
     navigation.navigate('ShareDetails', { share, isArchived: showUnarchive });
   };
 
-  const isTerminalState =
+  const canArchive =
     share.status === ShareStatus.HomeSafe ||
     share.isDisputed ||
-    share.status === ShareStatus.Declined;
+    share.status === ShareStatus.Declined ||
+    share.userBook.isDeleted;
 
   const handleArchive = async () => {
     if (isArchiving) return;
@@ -144,7 +145,7 @@ export const ShareBookCard: React.FC<ShareBookCardProps> = ({
       );
     }
 
-    if (isTerminalState) {
+    if (canArchive) {
       return (
         <TouchableOpacity style={styles.archiveAction} onPress={handleArchive}>
           <Ionicons name="archive-outline" size={24} color="#fff" />
@@ -210,7 +211,7 @@ export const ShareBookCard: React.FC<ShareBookCardProps> = ({
   );
 
   // Only enable swipe if it's a terminal state or showing unarchive
-  if (isTerminalState || showUnarchive) {
+  if (canArchive || showUnarchive) {
     return (
       <Swipeable
         ref={swipeableRef}
