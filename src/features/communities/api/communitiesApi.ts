@@ -21,4 +21,8 @@ export const communitiesApi = {
   leaveCommunity: async (communityId: number): Promise<void> => {
     return api.delete(`/community-users/leave/${communityId}`);
   },
+
+  joinCommunityById: async (communityId: number): Promise<void> => {
+    return api.post(`/community-users/join/${communityId}`, {});
+  },
 };

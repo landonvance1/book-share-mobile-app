@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BookSearchPage } from '../features/books/components/BookSearchPage';
 import { LibraryStack } from '../features/library/LibraryStack';
 import { SharesStack } from '../features/shares/SharesStack';
-import CommunitiesScreen from '../features/communities/CommunitiesScreen';
+import { CommunitiesStack } from '../features/communities/CommunitiesStack';
 import SettingsScreen from '../features/settings/SettingsScreen';
 import { useShareUnreadCount } from '../features/notifications/hooks/useNotifications';
 
@@ -56,7 +56,7 @@ export default function TabNavigator() {
             tabBarBadge: unreadCount > 0 ? unreadCount : undefined,
           }}
         />
-        <Tab.Screen name="Communities" component={CommunitiesScreen} />
+        <Tab.Screen name="Communities" component={CommunitiesStack} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
   );
