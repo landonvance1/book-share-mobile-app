@@ -162,14 +162,7 @@ export default function BarcodeScanner() {
       </View>
       
       <View style={styles.bottomControls}>
-        <TouchableOpacity 
-          style={styles.searchButton}
-          onPress={() => navigation.navigate('ExternalBookSearch')}
-        >
-          <Text style={styles.searchButtonText}>Search Title/Author</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.cancelButton}
           onPress={() => navigation.goBack()}
         >
@@ -288,27 +281,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     paddingHorizontal: 20,
   },
   cancelButton: {
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 8,
   },
   cancelText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  searchButton: {
-    backgroundColor: 'rgba(0, 122, 255, 0.8)',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
-  searchButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
