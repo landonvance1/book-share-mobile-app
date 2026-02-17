@@ -31,7 +31,29 @@ export default function LibraryScreen() {
   const route = useRoute<LibraryScreenRouteProp>();
 
   const handleAddBookPress = () => {
-    navigation.navigate('BarcodeScanner');
+    Alert.alert(
+      'Add Book',
+      'How would you like to add a book?',
+      [
+        {
+          text: 'Scan Barcode',
+          onPress: () => navigation.navigate('BarcodeScanner'),
+        },
+        {
+          text: 'Scan Book Cover',
+          onPress: () => navigation.navigate('BookCoverScanner'),
+        },
+        {
+          text: 'Search Title/Author',
+          onPress: () => navigation.navigate('ExternalBookSearch'),
+        },
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   // Handle success message from BookConfirmation

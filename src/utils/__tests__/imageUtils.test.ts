@@ -1,5 +1,21 @@
-import { getFullImageUrl, getImageUrlFromId } from '../imageUtils';
+import { getFullImageUrl, getImageUrlFromId, cropImageToScanArea } from '../imageUtils';
 import { API_BASE_URL } from '../../lib/constants';
+import * as ImageManipulator from 'expo-image-manipulator';
+
+// Mock expo-image-manipulator
+jest.mock('expo-image-manipulator', () => ({
+  manipulateAsync: jest.fn(),
+  SaveFormat: {
+    JPEG: 'jpeg',
+    PNG: 'png',
+  },
+}));
+
+// Mock the config (so tests don't depend on production values)
+jest.mock('../../features/library/utils/imageProcessingConfig', () => ({
+  RESIZE_WIDTH: 1920,
+  COMPRESSION_QUALITY: 0.8,
+}));
 
 // Mock the API_BASE_URL constant
 jest.mock('../../lib/constants', () => ({
@@ -76,6 +92,60 @@ describe('imageUtils', () => {
     it('should return correct URL for valid id', () => {
       expect(getImageUrlFromId(1)).toBe(`${API_BASE_URL}/images/1.jpg`);
       expect(getImageUrlFromId(42)).toBe(`${API_BASE_URL}/images/42.jpg`);
+    });
+  });
+
+  describe('cropImageToScanArea', () => {
+    const mockManipulate = ImageManipulator.manipulateAsync as jest.Mock;
+
+    beforeEach(() => {
+      mockManipulate.mockReset();
+    });
+
+    it('should call manipulateAsync with crop and resize operations', async () => {
+      const inputUri = 'file://test-image.jpg';
+      const resultUri = 'file://cropped-image.jpg';
+
+      mockManipulate.mockResolvedValue({ uri: resultUri, width: 1920, height: 2400 });
+
+      const cropRect = { originX: 50, originY: 100, width: 280, height: 350 };
+      const result = await cropImageToScanArea(inputUri, cropRect);
+
+      expect(mockManipulate).toHaveBeenCalledWith(
+        inputUri,
+        [
+          { crop: cropRect },
+          { resize: { width: 1920 } },
+        ],
+        {
+          compress: 0.8,
+          format: 'jpeg',
+        }
+      );
+      expect(result).toBe(resultUri);
+    });
+
+    it('should propagate errors from manipulateAsync', async () => {
+      mockManipulate.mockRejectedValue(new Error('Image processing failed'));
+
+      await expect(
+        cropImageToScanArea('file://bad.jpg', {
+          originX: 0,
+          originY: 0,
+          width: 100,
+          height: 100,
+        })
+      ).rejects.toThrow('Image processing failed');
+    });
+
+    it('should pass through the exact crop rectangle provided', async () => {
+      mockManipulate.mockResolvedValue({ uri: 'file://out.jpg' });
+
+      const oddCrop = { originX: 123, originY: 456, width: 789, height: 1011 };
+      await cropImageToScanArea('file://input.jpg', oddCrop);
+
+      const [, actions] = mockManipulate.mock.calls[0];
+      expect(actions[0]).toEqual({ crop: oddCrop });
     });
   });
 });

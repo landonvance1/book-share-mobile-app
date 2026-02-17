@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -11,7 +11,7 @@ import {
   Alert,
   Keyboard,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { LibraryStackParamList } from '../LibraryStack';
 import { api } from '../../../lib/api';
@@ -19,15 +19,26 @@ import { Book, ExternalBookSearchResponse } from '../../books/types';
 import { ExternalBookCard } from '../components/ExternalBookCard';
 
 type ExternalBookSearchNavigationProp = StackNavigationProp<LibraryStackParamList, 'ExternalBookSearch'>;
+type ExternalBookSearchRouteProp = RouteProp<LibraryStackParamList, 'ExternalBookSearch'>;
 
 export default function ExternalBookSearch() {
-  const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
+  const route = useRoute<ExternalBookSearchRouteProp>();
+  const { prefillTitle, prefillAuthor } = route.params || {};
+
+  const [title, setTitle] = useState(prefillTitle || '');
+  const [author, setAuthor] = useState(prefillAuthor || '');
   const [books, setBooks] = useState<Book[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const navigation = useNavigation<ExternalBookSearchNavigationProp>();
+
+  // Auto-search if prefilled values exist
+  useEffect(() => {
+    if (prefillTitle || prefillAuthor) {
+      handleSearch();
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSearch = async () => {
     if (!title.trim() && !author.trim()) {

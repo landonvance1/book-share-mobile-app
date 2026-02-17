@@ -4,18 +4,33 @@ import LibraryScreen from './LibraryScreen';
 import BarcodeScanner from './screens/BarcodeScanner';
 import BookConfirmation from './screens/BookConfirmation';
 import ExternalBookSearch from './screens/ExternalBookSearch';
+import BookCoverScanner from './screens/BookCoverScanner';
+import CoverMatchResults from './components/CoverMatchResults';
+import { Book } from '../books/types';
 
 export type LibraryStackParamList = {
   LibraryMain: { showSuccess?: boolean } | undefined;
   BarcodeScanner: undefined;
-  ExternalBookSearch: undefined;
-  BookConfirmation: {
-    book: {
-      id: number;
-      title: string;
-      author: string;
-      thumbnailUrl: string;
-    };
+  BookCoverScanner: undefined;
+  ExternalBookSearch: {
+    prefillTitle?: string;
+    prefillAuthor?: string;
+  } | undefined;
+  BookConfirmation:
+    | {
+        book: { id: number; title: string; author: string; thumbnailUrl: string };
+        source: 'cover';
+        capturedCoverUri: string;
+      }
+    | {
+        book: { id: number; title: string; author: string; thumbnailUrl: string };
+        source?: 'barcode' | 'search';
+        capturedCoverUri?: undefined;
+      };
+  CoverMatchResults: {
+    matches: Book[];
+    capturedPhotoUri: string;
+    extractedText: string;
   };
 };
 
@@ -42,11 +57,29 @@ export function LibraryStack() {
         }}
       />
       <Stack.Screen
+        name="BookCoverScanner"
+        component={BookCoverScanner}
+        options={{
+          headerShown: true,
+          title: 'Scan Book Cover',
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
         name="ExternalBookSearch"
         component={ExternalBookSearch}
         options={{
           headerShown: true,
           title: 'Add Book',
+          headerBackTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="CoverMatchResults"
+        component={CoverMatchResults}
+        options={{
+          headerShown: true,
+          title: 'Select Book',
           headerBackTitle: '',
         }}
       />
