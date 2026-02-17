@@ -1,15 +1,26 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Alert, TouchableOpacity } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { communitiesApi } from './api/communitiesApi';
 import { CommunityWithMemberCount } from './types';
 import { useAuth } from '../../contexts/AuthContext';
 import AddCommunityForm from './components/AddCommunityForm';
+import { QRCodeModal } from './components/QRCodeModal';
+import { CommunitiesStackParamList } from './CommunitiesStack';
 import { Ionicons } from '@expo/vector-icons';
 
+type CommunitiesScreenNavigationProp = StackNavigationProp<
+  CommunitiesStackParamList,
+  'CommunitiesMain'
+>;
+
 export default function CommunitiesScreen() {
+  const navigation = useNavigation<CommunitiesScreenNavigationProp>();
   const [communities, setCommunities] = useState<CommunityWithMemberCount[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [selectedCommunityForQR, setSelectedCommunityForQR] = useState<CommunityWithMemberCount | null>(null);
   const { user } = useAuth();
 
   const loadCommunities = useCallback(async () => {
@@ -32,6 +43,13 @@ export default function CommunitiesScreen() {
   useEffect(() => {
     loadCommunities();
   }, [loadCommunities]);
+
+  // Reload communities when screen comes into focus (e.g., after joining via QR)
+  useFocusEffect(
+    useCallback(() => {
+      loadCommunities();
+    }, [loadCommunities])
+  );
 
   const handleLeaveCommunity = async (communityId: number) => {
     if (!user?.id) return;
@@ -71,12 +89,20 @@ export default function CommunitiesScreen() {
           {item.memberCount || 0} {(item.memberCount || 0) === 1 ? 'member' : 'members'}
         </Text>
       </View>
-      <TouchableOpacity
-        style={[styles.leaveButton, !item.active && styles.inactiveButton]}
-        onPress={() => handleLeaveCommunity(item.id)}
-      >
-        <Text style={[styles.leaveButtonText, !item.active && styles.inactiveText]}>Leave</Text>
-      </TouchableOpacity>
+      <View style={styles.communityActions}>
+        <TouchableOpacity
+          style={styles.shareButton}
+          onPress={() => setSelectedCommunityForQR(item)}
+        >
+          <Ionicons name="qr-code-outline" size={20} color="#007AFF" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.leaveButton, !item.active && styles.inactiveButton]}
+          onPress={() => handleLeaveCommunity(item.id)}
+        >
+          <Text style={[styles.leaveButtonText, !item.active && styles.inactiveText]}>Leave</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 
@@ -92,7 +118,12 @@ export default function CommunitiesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity
+          style={styles.scanButton}
+          onPress={() => navigation.navigate('CommunityScanner')}
+        >
+          <Ionicons name="qr-code-outline" size={24} color="#007AFF" />
+        </TouchableOpacity>
         <Text style={styles.title}>My Communities</Text>
         <View style={styles.headerButtonContainer}>
           {!showAddForm && (
@@ -120,6 +151,13 @@ export default function CommunitiesScreen() {
           style={styles.list}
         />
       )}
+
+      <QRCodeModal
+        visible={selectedCommunityForQR !== null}
+        onClose={() => setSelectedCommunityForQR(null)}
+        communityId={selectedCommunityForQR?.id || 0}
+        communityName={selectedCommunityForQR?.name || ''}
+      />
     </View>
   );
 }
@@ -144,8 +182,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 8,
   },
-  headerSpacer: {
+  scanButton: {
     width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerButtonContainer: {
     width: 44,
@@ -196,6 +237,18 @@ const styles = StyleSheet.create({
   },
   communityInfo: {
     flex: 1,
+  },
+  communityActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  shareButton: {
+    backgroundColor: '#F0F0F0',
+    padding: 8,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   communityName: {
     fontSize: 18,
