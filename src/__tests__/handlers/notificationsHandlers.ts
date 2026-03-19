@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-const API_BASE_URL = 'http://localhost:5155';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 const mockNotification = {
   id: 1,

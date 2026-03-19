@@ -5,7 +5,7 @@ import {
   LogLevel
 } from '@microsoft/signalr';
 import * as SecureStore from 'expo-secure-store';
-import { API_BASE_URL } from '../../../lib/constants';
+import { API_BASE_URL } from '../../../lib/config';
 import { ChatMessage, ConnectionStatus } from '../types/chat';
 
 class SignalRService {

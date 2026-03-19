@@ -1,4 +1,4 @@
-import { API_BASE_URL } from '../../../lib/constants';
+import { API_BASE_URL } from '../../../lib/config';
 import * as SecureStore from 'expo-secure-store';
 import { CoverAnalysisResponse } from '../types/coverAnalysis';
 import { ANALYSIS_TIMEOUT_MS } from '../utils/imageProcessingConfig';

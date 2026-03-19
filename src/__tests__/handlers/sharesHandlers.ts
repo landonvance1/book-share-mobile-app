@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 import { ShareStatus } from '../../lib/constants';
 
-const API_BASE_URL = 'http://localhost:5155';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 const mockShare = {
   id: 1,

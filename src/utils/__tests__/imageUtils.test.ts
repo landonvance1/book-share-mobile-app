@@ -1,6 +1,7 @@
 import { getFullImageUrl, getImageUrlFromId, cropImageToScanArea } from '../imageUtils';
-import { API_BASE_URL } from '../../lib/constants';
 import * as ImageManipulator from 'expo-image-manipulator';
+
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL!;
 
 // Mock expo-image-manipulator
 jest.mock('expo-image-manipulator', () => ({
@@ -15,25 +16,6 @@ jest.mock('expo-image-manipulator', () => ({
 jest.mock('../../features/library/utils/imageProcessingConfig', () => ({
   RESIZE_WIDTH: 1920,
   COMPRESSION_QUALITY: 0.8,
-}));
-
-// Mock the API_BASE_URL constant
-jest.mock('../../lib/constants', () => ({
-  API_BASE_URL: 'http://localhost:5155',
-  BookStatus: {
-    Available: 1,
-    BeingShared: 2,
-    Unavailable: 3,
-  },
-  ShareStatus: {
-    Requested: 1,
-    Ready: 2,
-    PickedUp: 3,
-    Returned: 4,
-    HomeSafe: 5,
-    Disputed: 6,
-    Declined: 7,
-  },
 }));
 
 describe('imageUtils', () => {

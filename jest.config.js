@@ -1,3 +1,5 @@
+process.env.EXPO_PUBLIC_API_URL = 'http://localhost:5155';
+
 module.exports = {
   testEnvironment: 'node',
   preset: 'react-native',

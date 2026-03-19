@@ -1,5 +1,5 @@
-import { API_BASE_URL } from './constants';
 import * as SecureStore from 'expo-secure-store';
+import { API_BASE_URL } from './config';
 
 export class ApiError extends Error {
   constructor(
