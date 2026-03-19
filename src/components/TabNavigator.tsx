@@ -2,7 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-import { BookSearchPage } from '../features/books/components/BookSearchPage';
+import { SearchStack } from '../features/books/SearchStack';
 import { LibraryStack } from '../features/library/LibraryStack';
 import { SharesStack } from '../features/shares/SharesStack';
 import { CommunitiesStack } from '../features/communities/CommunitiesStack';
@@ -47,7 +47,7 @@ export default function TabNavigator() {
           headerShown: false,
         })}
       >
-        <Tab.Screen name="Search" component={BookSearchPage} />
+        <Tab.Screen name="Search" component={SearchStack} />
         <Tab.Screen name="Library" component={LibraryStack} />
         <Tab.Screen
           name="Shares"

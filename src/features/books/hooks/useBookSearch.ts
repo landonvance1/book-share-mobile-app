@@ -14,7 +14,22 @@ export const useBookSearch = () => {
 
     try {
       const results = await booksApi.searchBooks(query);
-      setSearchResults(results);
+      const merged = Object.values(
+        results.reduce((acc, result) => {
+          if (!acc[result.bookId]) {
+            acc[result.bookId] = { ...result, owners: [] };
+          }
+          const existingOwnerIds = new Set(acc[result.bookId].owners.map(o => o.userBookId));
+          result.owners.forEach(owner => {
+            if (!existingOwnerIds.has(owner.userBookId)) {
+              acc[result.bookId].owners.push(owner);
+              existingOwnerIds.add(owner.userBookId);
+            }
+          });
+          return acc;
+        }, {} as Record<number, SearchBookResult>)
+      ).filter(result => result.owners.length > 0);
+      setSearchResults(merged);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Search failed');
       setSearchResults([]);

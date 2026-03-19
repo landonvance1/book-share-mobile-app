@@ -7,27 +7,32 @@ import {
   ActivityIndicator,
   SafeAreaView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { useBookSearch } from '../hooks/useBookSearch';
 import { useDebounceValue } from '../../../hooks/useDebounceValue';
 import { SearchBookCard } from './SearchBookCard';
 import { SearchBookResult } from '../types';
 import { SearchInput } from '../../../components/SearchInput';
+import { SearchStackParamList } from '../SearchStack';
+
+type SearchNavProp = StackNavigationProp<SearchStackParamList, 'BookSearch'>;
 
 export const BookSearchPage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery] = useDebounceValue(searchQuery, 500);
   const { searchResults, loading, error, searchBooks } = useBookSearch();
+  const navigation = useNavigation<SearchNavProp>();
 
   useEffect(() => {
     searchBooks(debouncedQuery);
   }, [debouncedQuery, searchBooks]);
 
-  const handleBorrowPress = (_book: SearchBookResult) => {
-    // TODO: Implement borrow flow
-  };
-
   const renderBookCard = ({ item }: { item: SearchBookResult }) => (
-    <SearchBookCard book={item} onBorrowPress={handleBorrowPress} />
+    <SearchBookCard
+      book={item}
+      onPress={() => navigation.navigate('ShareRequest', { book: item })}
+    />
   );
 
   return (
@@ -56,7 +61,7 @@ export const BookSearchPage: React.FC = () => {
       <FlatList
         data={searchResults}
         renderItem={renderBookCard}
-        keyExtractor={(item) => `${item.userBookId}-${item.communityId}`}
+        keyExtractor={(item) => `${item.bookId}`}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContainer}
       />

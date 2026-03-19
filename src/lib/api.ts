@@ -14,7 +14,17 @@ export class ApiError extends Error {
 
 const getAuthHeaders = async (): Promise<Record<string, string>> => {
   const token = await SecureStore.getItemAsync('auth_token');
-  return token ? { 'Authorization': `Bearer ${token}` } : {};
+  const headers: Record<string, string> = {};
+
+  if (__DEV__ && API_BASE_URL.includes('ngrok')) {
+    headers['ngrok-skip-browser-warning'] = 'true';
+  }
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  return headers;
 };
 
 export const api = {

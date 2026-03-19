@@ -5,15 +5,20 @@ export interface Book {
   thumbnailUrl: string;
 }
 
+export interface BookOwner {
+  userBookId: number;
+  ownerUserId: string;
+  ownerFirstName: string;
+  status: number;
+  communityId: number;
+  communityName: string;
+}
+
 export interface SearchBookResult {
   bookId: number;
   title: string;
   author: string;
-  userBookId: number;
-  ownerUserId: string;
-  status: number;
-  communityId: number;
-  communityName: string;
+  owners: BookOwner[];
 }
 
 export interface UserBook {
