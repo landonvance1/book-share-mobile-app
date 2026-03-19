@@ -1,5 +1,5 @@
-import { API_BASE_URL } from '../lib/constants';
 import * as ImageManipulator from 'expo-image-manipulator';
+import { API_BASE_URL } from '../lib/config';
 import {
   RESIZE_WIDTH,
   COMPRESSION_QUALITY,

@@ -313,8 +313,7 @@ AppNavigator (checks auth status)
 - TypeScript configured with strict mode
 - Expo supports iOS, Android, and web platforms
 - Edge-to-edge display enabled for Android
-- API base URL switches based on `__DEV__` flag
-- Development API: `http://{expo-host}:5155`
+- API base URL read from `EXPO_PUBLIC_API_URL` environment variable (see Environment Configuration below)
 
 ## Architecture Patterns (Based on Bulletproof React)
 
@@ -553,6 +552,8 @@ Backend includes DatabaseSeeder with test data:
 - JWT signing key (32+ characters)
 - PostgreSQL credentials
 
-**Mobile:** API base URL in `/src/lib/constants.ts`
-- Development: `http://{expo-host}:5155`
-- Production: Hard-coded (needs update for deployment)
+**Mobile:** Uses `EXPO_PUBLIC_*` environment variables (Expo SDK 49+ native support)
+- Copy `.env.example` to `.env.development` and set `EXPO_PUBLIC_API_URL` to your local or ngrok URL
+- `.env.development` and `.env.production` are gitignored — never committed
+- `src/lib/config.ts` exports `API_BASE_URL` and throws at startup if the variable is missing
+- Tests set `EXPO_PUBLIC_API_URL=http://localhost:5155` via `jest.config.js` (no `.env` file needed for tests)
