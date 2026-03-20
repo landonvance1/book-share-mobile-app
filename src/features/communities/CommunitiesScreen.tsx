@@ -152,12 +152,14 @@ export default function CommunitiesScreen() {
         />
       )}
 
-      <QRCodeModal
-        visible={selectedCommunityForQR !== null}
-        onClose={() => setSelectedCommunityForQR(null)}
-        communityId={selectedCommunityForQR?.id || 0}
-        communityName={selectedCommunityForQR?.name || ''}
-      />
+      {selectedCommunityForQR && (
+        <QRCodeModal
+          visible={true}
+          onClose={() => setSelectedCommunityForQR(null)}
+          communityId={selectedCommunityForQR.id}
+          communityName={selectedCommunityForQR.name}
+        />
+      )}
     </View>
   );
 }

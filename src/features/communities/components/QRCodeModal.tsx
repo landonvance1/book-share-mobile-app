@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import {
   Modal,
   View,
@@ -30,7 +30,14 @@ export function QRCodeModal({
   const qrViewRef = useRef<View>(null);
   const [isSharing, setIsSharing] = useState(false);
 
-  const qrData = generateQRCodeData(communityId);
+  const qrData = useMemo(
+    () => (Number.isInteger(communityId) && communityId > 0 ? generateQRCodeData(communityId) : null),
+    [communityId]
+  );
+
+  if (!qrData) {
+    return null;
+  }
 
   const handleShare = async () => {
     try {
