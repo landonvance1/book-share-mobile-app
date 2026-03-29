@@ -26,7 +26,7 @@ type LibraryScreenRouteProp = RouteProp<LibraryStackParamList, 'LibraryMain'>;
 export default function LibraryScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery] = useDebounceValue(searchQuery, 300);
-  const { userBooks, loading, error, updateUserBookStatus, removeUserBook } = useUserBooks();
+  const { userBooks, loading, error, removeUserBook } = useUserBooks();
   const navigation = useNavigation<LibraryScreenNavigationProp>();
   const route = useRoute<LibraryScreenRouteProp>();
 
@@ -117,19 +117,10 @@ export default function LibraryScreen() {
     }
   };
 
-  const handleStatusChange = async (userBookId: number, status: number) => {
-    try {
-      await updateUserBookStatus(userBookId, status);
-    } catch (error) {
-      console.error('Failed to update book status:', error);
-    }
-  };
-
   const renderBookCard = ({ item }: { item: UserBook }) => (
-    <LibraryBookCard 
-      userBook={item} 
+    <LibraryBookCard
+      userBook={item}
       onRemovePress={handleRemoveBook}
-      onStatusChange={handleStatusChange}
     />
   );
 

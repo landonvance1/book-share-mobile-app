@@ -9,7 +9,6 @@ interface UseUserBooksReturn {
   loading: boolean;
   error: string | null;
   refreshUserBooks: () => Promise<void>;
-  updateUserBookStatus: (userBookId: number, status: number) => Promise<void>;
   removeUserBook: (userBookId: number, confirmed?: boolean) => Promise<DeleteUserBookResult>;
 }
 
@@ -47,17 +46,6 @@ export const useUserBooks = (): UseUserBooksReturn => {
     }
   }, [user?.id]);
 
-  const updateUserBookStatus = useCallback(async (userBookId: number, status: number) => {
-    try {
-      await userBooksApi.updateUserBookStatus(userBookId, status);
-      await refreshUserBooks();
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update book status';
-      setError(errorMessage);
-      throw err;
-    }
-  }, [refreshUserBooks]);
-
   const removeUserBook = useCallback(async (userBookId: number, confirmed?: boolean): Promise<DeleteUserBookResult> => {
     try {
       const result = await userBooksApi.deleteUserBook(userBookId, confirmed);
@@ -83,7 +71,6 @@ export const useUserBooks = (): UseUserBooksReturn => {
     loading,
     error,
     refreshUserBooks,
-    updateUserBookStatus,
     removeUserBook,
   };
 };
