@@ -1,7 +1,7 @@
 import { User } from '../../types/auth';
 import { Share } from '../../features/shares/types';
 import { Book } from '../../features/books/types';
-import { ShareStatus, BookStatus } from '../../lib/constants';
+import { ShareStatus } from '../../lib/constants';
 
 let userIdCounter = 1;
 let shareIdCounter = 1;
@@ -49,7 +49,6 @@ export const createMockShare = (overrides?: Partial<Share>): Share => {
       id: userBookIdCounter,
       userId: lender.id,
       bookId: book.id,
-      status: BookStatus.BeingShared,
       isDeleted: false,
       book,
       user: lender,

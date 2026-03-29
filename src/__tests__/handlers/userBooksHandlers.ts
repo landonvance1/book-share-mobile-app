@@ -6,7 +6,6 @@ const mockUserBook = {
   id: 1,
   userId: 'user-1',
   bookId: 1,
-  status: 1, // Available
   book: {
     id: 1,
     title: 'The Great Gatsby',
@@ -48,14 +47,6 @@ export const userBooksHandlers = [
   // Get user's books
   http.get(`${API_BASE_URL}/user-books/user/:userId`, () => {
     return HttpResponse.json([mockUserBook]);
-  }),
-
-  // Update user book status
-  http.put(`${API_BASE_URL}/user-books/:id/status`, async ({ params }) => {
-    return HttpResponse.json({
-      ...mockUserBook,
-      id: Number(params.id),
-    });
   }),
 
   // Delete user book - handles confirmation flow

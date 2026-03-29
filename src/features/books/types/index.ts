@@ -9,7 +9,6 @@ export interface BookOwner {
   userBookId: number;
   ownerUserId: string;
   ownerFirstName: string;
-  status: number;
   communityId: number;
   communityName: string;
 }
@@ -25,7 +24,6 @@ export interface UserBook {
   id: number;
   userId: string;
   bookId: number;
-  status: number;
   book: Book;
 }
 

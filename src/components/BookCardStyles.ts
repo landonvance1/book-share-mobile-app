@@ -116,30 +116,6 @@ export const bookCardStyles = StyleSheet.create({
     marginHorizontal: 16,
     marginBottom: 16,
   },
-  statusContainer: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 4,
-    alignSelf: 'flex-start',
-    marginBottom: 8,
-  },
-  statusAvailable: {
-    backgroundColor: '#4CAF50',
-  },
-  statusBeingShared: {
-    backgroundColor: '#D4A574',
-  },
-  statusUnavailable: {
-    backgroundColor: '#C4443C',
-  },
-  statusText: {
-    color: '#FEFCF9',
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    width: 100
-  },
-  
   // Legacy styles for backward compatibility - will be removed after components are updated
   header: {
     padding: 16,
