@@ -1,5 +1,17 @@
 import { User } from "../../../types/auth";
 
+export enum ReportCategory {
+  Spam = 1,
+  Harassment = 2,
+  InappropriateContent = 3,
+  Other = 4,
+}
+
+export interface ReportMessageRequest {
+  category: ReportCategory;
+  notes?: string;
+}
+
 export interface ChatMessage {
   id: number;
   content: string;
@@ -7,6 +19,7 @@ export interface ChatMessage {
   senderName: string;
   shareId: number;
   sentAt: string;
+  isSystemMessage: boolean;
 }
 
 export interface SendMessageRequest {

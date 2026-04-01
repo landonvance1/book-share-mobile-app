@@ -4,6 +4,7 @@ import SharesScreen from './SharesScreen';
 import ShareDetailsScreen from './ShareDetailsScreen';
 import ShareChatScreen from './ShareChatScreen';
 import ArchivedSharesScreen from './ArchivedSharesScreen';
+import ReportMessageScreen from './screens/ReportMessageScreen';
 import { Share } from './types';
 
 export type SharesStackParamList = {
@@ -11,6 +12,7 @@ export type SharesStackParamList = {
   ShareDetails: { share: Share; isArchived?: boolean };
   ShareChat: { share: Share };
   ArchivedShares: undefined;
+  ReportMessage: { shareId: number; messageId: number };
 };
 
 const Stack = createStackNavigator<SharesStackParamList>();
@@ -22,6 +24,7 @@ export const SharesStack: React.FC = () => {
       <Stack.Screen name="ShareDetails" component={ShareDetailsScreen} />
       <Stack.Screen name="ShareChat" component={ShareChatScreen} />
       <Stack.Screen name="ArchivedShares" component={ArchivedSharesScreen} />
+      <Stack.Screen name="ReportMessage" component={ReportMessageScreen} />
     </Stack.Navigator>
   );
 };
