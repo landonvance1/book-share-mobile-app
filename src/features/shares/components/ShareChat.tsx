@@ -10,11 +10,17 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
 import { chatApi } from '../api/chatApi';
 import { signalRService } from '../services/signalRService';
 import { ChatMessage, ConnectionStatus, ChatState } from '../types/chat';
 import { Share } from '../types';
 import { useAuth } from '../../../contexts/AuthContext';
+import { SharesStackParamList } from '../SharesStack';
+import { MessageOptionsSheet } from './MessageOptionsSheet';
+
+type ShareChatNavProp = StackNavigationProp<SharesStackParamList>;
 
 interface ShareChatProps {
   share: Share;
@@ -25,6 +31,8 @@ const RATE_LIMIT_WARNING_THRESHOLD = 25; // Warn at 25 messages (5 before limit)
 
 export default function ShareChat({ share }: ShareChatProps) {
   const { user } = useAuth();
+  const navigation = useNavigation<ShareChatNavProp>();
+
   const [chatState, setChatState] = useState<ChatState>({
     messages: [],
     connectionStatus: ConnectionStatus.Disconnected,
@@ -36,7 +44,18 @@ export default function ShareChat({ share }: ShareChatProps) {
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [recentMessageCount, setRecentMessageCount] = useState(0);
+  const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(null);
   const flatListRef = useRef<FlatList>(null);
+
+  const handleLongPress = useCallback((item: ChatMessage) => {
+    setSelectedMessage(item);
+  }, []);
+
+  const handleReportSelected = useCallback(() => {
+    if (!selectedMessage) return;
+    navigation.navigate('ReportMessage', { shareId: share.id, messageId: selectedMessage.id });
+    setSelectedMessage(null);
+  }, [navigation, share.id, selectedMessage]);
 
   // Initialize chat when component mounts
   useEffect(() => {
@@ -234,28 +253,40 @@ export default function ShareChat({ share }: ShareChatProps) {
 
     const timeString = formatDateTime(messageDate);
 
+    const bubble = (
+      <View style={[
+        styles.messageBubble,
+        isCurrentUser ? styles.currentUserBubble : styles.otherUserBubble
+      ]}>
+        <Text style={[
+          styles.messageText,
+          isCurrentUser ? styles.currentUserText : styles.otherUserText
+        ]}>
+          {item.content}
+        </Text>
+        <Text style={[
+          styles.messageTime,
+          isCurrentUser ? styles.currentUserTime : styles.otherUserTime
+        ]}>
+          {timeString}
+        </Text>
+      </View>
+    );
+
     return (
       <View style={[
         styles.messageContainer,
         isCurrentUser ? styles.currentUserMessage : styles.otherUserMessage
       ]}>
-        <View style={[
-          styles.messageBubble,
-          isCurrentUser ? styles.currentUserBubble : styles.otherUserBubble
-        ]}>
-          <Text style={[
-            styles.messageText,
-            isCurrentUser ? styles.currentUserText : styles.otherUserText
-          ]}>
-            {item.content}
-          </Text>
-          <Text style={[
-            styles.messageTime,
-            isCurrentUser ? styles.currentUserTime : styles.otherUserTime
-          ]}>
-            {timeString}
-          </Text>
-        </View>
+        {isCurrentUser || item.isSystemMessage ? bubble : (
+          <TouchableOpacity
+            onLongPress={() => handleLongPress(item)}
+            delayLongPress={400}
+            activeOpacity={0.7}
+          >
+            {bubble}
+          </TouchableOpacity>
+        )}
       </View>
     );
   };
@@ -286,6 +317,11 @@ export default function ShareChat({ share }: ShareChatProps) {
   }
   return (
     <View style={styles.container}>
+      <MessageOptionsSheet
+        visible={selectedMessage !== null}
+        onClose={() => setSelectedMessage(null)}
+        onReport={handleReportSelected}
+      />
       <FlatList
         ref={flatListRef}
         data={chatState.messages}

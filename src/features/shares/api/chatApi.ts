@@ -3,7 +3,8 @@ import {
   ChatMessage,
   SendMessageRequest,
   ChatMessagesResponse,
-  ChatPaginationParams
+  ChatPaginationParams,
+  ReportMessageRequest,
 } from '../types/chat';
 
 export const chatApi = {
@@ -26,5 +27,13 @@ export const chatApi = {
     message: SendMessageRequest
   ): Promise<ChatMessage> => {
     return api.post(`/shares/${shareId}/chat/messages`, message);
+  },
+
+  reportMessage: async (
+    shareId: number,
+    messageId: number,
+    body: ReportMessageRequest
+  ): Promise<void> => {
+    return api.postNoContent(`/shares/${shareId}/chat/messages/${messageId}/report`, body);
   },
 };

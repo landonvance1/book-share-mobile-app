@@ -93,6 +93,21 @@ export const api = {
     return text ? JSON.parse(text) : null;
   },
 
+  postNoContent: async (endpoint: string, data: any) => {
+    const authHeaders = await getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...authHeaders,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new ApiError(response.status, `API Error: ${response.status}`);
+    }
+  },
+
   delete: async (endpoint: string, data?: any) => {
     const authHeaders = await getAuthHeaders();
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
