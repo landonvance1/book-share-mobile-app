@@ -7,15 +7,19 @@ import { LibraryStack } from '../features/library/LibraryStack';
 import { SharesStack } from '../features/shares/SharesStack';
 import { CommunitiesStack } from '../features/communities/CommunitiesStack';
 import SettingsScreen from '../features/settings/SettingsScreen';
-import { useShareUnreadCount } from '../features/notifications/hooks/useNotifications';
+import { useShareUnreadCount, useAdminWarnings } from '../features/notifications/hooks/useNotifications';
+import { AdminWarningModal } from '../features/notifications/components/AdminWarningModal';
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
   const unreadCount = useShareUnreadCount();
+  const adminWarnings = useAdminWarnings();
 
   return (
-    <Tab.Navigator
+    <>
+      {adminWarnings.length > 0 && <AdminWarningModal warnings={adminWarnings} />}
+      <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName: any;
@@ -59,5 +63,6 @@ export default function TabNavigator() {
         <Tab.Screen name="Communities" component={CommunitiesStack} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
+    </>
   );
 }
