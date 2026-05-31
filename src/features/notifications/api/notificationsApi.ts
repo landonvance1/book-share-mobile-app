@@ -16,4 +16,9 @@ export const notificationsApi = {
   markShareChatNotificationsRead: async (shareId: number): Promise<void> => {
     return api.patch(`/notifications/shares/${shareId}/chat/read`, {});
   },
+
+  // Mark a single notification as read by ID
+  markNotificationRead: async (notificationId: number): Promise<void> => {
+    return api.patch(`/notifications/${notificationId}/read`, {});
+  },
 };

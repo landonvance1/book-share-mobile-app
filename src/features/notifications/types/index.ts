@@ -16,4 +16,5 @@ export const NotificationTypes = {
   DUE_DATE_CHANGED: 'ShareDueDateChanged',
   SHARE_MESSAGE_RECEIVED: 'ShareMessageReceived',
   USER_BOOK_WITHDRAWN: 'UserBookWithdrawn',
+  ADMIN_WARNING: 'AdminWarning',
 } as const;

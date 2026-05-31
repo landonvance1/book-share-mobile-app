@@ -136,6 +136,51 @@ export function useMarkShareNotificationsRead(shareId: number) {
 }
 
 /**
+ * Derives unread AdminWarning notifications from the notifications cache
+ */
+export function useAdminWarnings() {
+  const { data: notifications = [] } = useNotifications();
+
+  return notifications.filter(
+    (notification) => notification.notificationType === NotificationTypes.ADMIN_WARNING
+  );
+}
+
+/**
+ * Mutation to mark a single notification as read by ID with optimistic update.
+ * Pass the notificationId to mutate(), not the hook — keeps the hook instance stable.
+ */
+export function useMarkNotificationRead() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (notificationId: number) => notificationsApi.markNotificationRead(notificationId),
+
+    onMutate: async (notificationId) => {
+      await queryClient.cancelQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+
+      const previousNotifications = queryClient.getQueryData<Notification[]>(NOTIFICATIONS_QUERY_KEY);
+
+      queryClient.setQueryData<Notification[]>(NOTIFICATIONS_QUERY_KEY, (old = []) =>
+        old.filter((notification) => notification.id !== notificationId)
+      );
+
+      return { previousNotifications };
+    },
+
+    onError: (_err, _variables, context) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(NOTIFICATIONS_QUERY_KEY, context.previousNotifications);
+      }
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_QUERY_KEY });
+    },
+  });
+}
+
+/**
  * Mutation to mark chat notifications as read with optimistic updates
  */
 export function useMarkChatNotificationsRead(shareId: number) {
