@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,9 @@ import {
   ScrollView,
   SafeAreaView,
   ActivityIndicator,
+  Platform,
 } from 'react-native';
+import { useKeyboardHeight } from '../../../hooks/useKeyboardHeight';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import type { RouteProp } from '@react-navigation/native';
@@ -31,6 +33,16 @@ export default function ReportMessageScreen() {
   const navigation = useNavigation<ReportMessageNavigationProp>();
   const route = useRoute<ReportMessageRouteProp>();
   const { shareId, messageId } = route.params;
+
+  const scrollViewRef = useRef<ScrollView>(null);
+  const keyboardHeight = useKeyboardHeight();
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  useEffect(() => {
+    if (keyboardHeight > 0) {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }
+  }, [keyboardHeight]);
 
   const [selectedCategory, setSelectedCategory] = useState<ReportCategory | null>(null);
   const [notes, setNotes] = useState('');
@@ -67,9 +79,19 @@ export default function ReportMessageScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView style={styles.content} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        ref={scrollViewRef}
+        contentContainerStyle={[
+          styles.content,
+          keyboardHeight > 0 && {
+            paddingBottom: Platform.OS === 'android' ? 0 : Math.max(0, keyboardHeight - footerHeight),
+          },
+        ]}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+      >
         <Text style={styles.subtitle}>
-          Let us know why you're reporting this message. Your report is anonymous.
+          Let us know why you&apos;re reporting this message. Your report is anonymous.
         </Text>
 
         <View style={styles.categoriesSection}>
@@ -104,24 +126,24 @@ export default function ReportMessageScreen() {
         <Text style={styles.charCount}>{notes.length}/500</Text>
 
         {error && <Text style={styles.errorText}>{error}</Text>}
-      </ScrollView>
 
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[
-            styles.submitButton,
-            (!selectedCategory || isSubmitting) && styles.submitButtonDisabled,
-          ]}
-          onPress={handleSubmit}
-          disabled={!selectedCategory || isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Text style={styles.submitButtonText}>Submit Report</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+        <View style={styles.footer} onLayout={(e) => setFooterHeight(e.nativeEvent.layout.height)}>
+          <TouchableOpacity
+            style={[
+              styles.submitButton,
+              (!selectedCategory || isSubmitting) && styles.submitButtonDisabled,
+            ]}
+            onPress={handleSubmit}
+            disabled={!selectedCategory || isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Text style={styles.submitButtonText}>Submit Report</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -158,8 +180,8 @@ const styles = StyleSheet.create({
     width: 60,
   },
   content: {
-    flex: 1,
     padding: 16,
+    flexGrow: 1,
   },
   subtitle: {
     fontSize: 14,
@@ -226,9 +248,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    marginTop: 24,
+    paddingBottom: 8,
   },
   submitButton: {
     backgroundColor: '#007AFF',
