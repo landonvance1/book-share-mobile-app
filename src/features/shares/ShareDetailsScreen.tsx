@@ -25,6 +25,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { SharesStackParamList } from './SharesStack';
 import ShareStatusTimeline from './components/ShareStatusTimeline';
 import { sharesApi } from './api/sharesApi';
+import { useUserReputation } from './hooks/useUserReputation';
 import {
   useShareNotifications,
   useMarkShareNotificationsRead,
@@ -71,6 +72,24 @@ export default function ShareDetailsScreen() {
   // Determine if current user is the owner or borrower
   const isOwner = user?.id === ownerId;
   const isBorrower = user?.id === currentShare.borrower;
+
+  const otherPartyId = isOwner ? currentShare.borrower : ownerId;
+  const otherPartyRole: 'borrower' | 'lender' = isOwner ? 'borrower' : 'lender';
+  const { reputation } = useUserReputation(otherPartyId, otherPartyRole);
+
+  const formatReputation = (role: 'borrower' | 'lender'): string | null => {
+    if (!reputation) return null;
+    const { completedCount, disputeCount } = reputation;
+    const roleNoun = role === 'borrower' ? 'borrow' : 'lend';
+    const disputeLabel = disputeCount === 1 ? '1 dispute' : `${disputeCount} disputes`;
+    if (completedCount === 0 && disputeCount === 0) {
+      return `New member · 0 disputes`;
+    }
+    const completedLabel = completedCount === 1
+      ? `1 completed ${roleNoun}`
+      : `${completedCount} completed ${roleNoun}s`;
+    return `${completedLabel} · ${disputeLabel}`;
+  };
 
   // Mark share notifications as read after a delay (gives user time to see the animation)
   useEffect(() => {
@@ -317,16 +336,26 @@ export default function ShareDetailsScreen() {
 
           <View style={styles.detailsGroup}>
             {isBorrower && (
-              <Text style={styles.detailText}>
-                <Text style={styles.detailLabel}>Owner: </Text>
-                {owner.firstName} {owner.lastName}
-              </Text>
+              <>
+                <Text style={styles.detailText}>
+                  <Text style={styles.detailLabel}>Owner: </Text>
+                  {owner.firstName} {owner.lastName}
+                </Text>
+                {formatReputation('lender') !== null && (
+                  <Text style={styles.reputationText}>{formatReputation('lender')}</Text>
+                )}
+              </>
             )}
             {isOwner && (
-              <Text style={styles.detailText}>
-                <Text style={styles.detailLabel}>Borrower: </Text>
-                {borrowerUser.firstName} {borrowerUser.lastName}
-              </Text>
+              <>
+                <Text style={styles.detailText}>
+                  <Text style={styles.detailLabel}>Borrower: </Text>
+                  {borrowerUser.firstName} {borrowerUser.lastName}
+                </Text>
+                {formatReputation('borrower') !== null && (
+                  <Text style={styles.reputationText}>{formatReputation('borrower')}</Text>
+                )}
+              </>
             )}
             <View
               style={[
@@ -578,6 +607,10 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontWeight: '600',
+  },
+  reputationText: {
+    fontSize: 12,
+    color: '#8E8E93',
   },
   // No padding in default state to align with "Owner"/"Borrower" labels and maintain
   // consistent 4px vertical spacing. Padding only applied in highlighted state where

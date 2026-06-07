@@ -21,3 +21,8 @@ export interface Share {
   userBook: UserBookWithOwner;
   borrowerUser: User;
 }
+
+export interface UserReputation {
+  completedCount: number;
+  disputeCount: number;
+}
